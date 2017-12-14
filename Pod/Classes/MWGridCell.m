@@ -12,12 +12,9 @@
 #import "MWPhotoBrowserPrivate.h"
 #import "UIImage+MWPhotoBrowser.h"
 
-#define VIDEO_INDICATOR_PADDING 10
-
 @interface MWGridCell () {
     
     UIImageView *_imageView;
-    UIImageView *_videoIndicator;
     UIImageView *_loadingError;
 	DACircularProgressView *_loadingIndicator;
     UIButton *_selectedButton;
@@ -42,21 +39,12 @@
         _imageView.autoresizesSubviews = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         [self addSubview:_imageView];
         
-        // Video Image
-        _videoIndicator = [UIImageView new];
-        _videoIndicator.hidden = NO;
-        UIImage *videoIndicatorImage = [UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/VideoOverlay" ofType:@"png" inBundle:[NSBundle bundleForClass:[self class]]];
-        _videoIndicator.frame = CGRectMake(self.bounds.size.width - videoIndicatorImage.size.width - VIDEO_INDICATOR_PADDING, self.bounds.size.height - videoIndicatorImage.size.height - VIDEO_INDICATOR_PADDING, videoIndicatorImage.size.width, videoIndicatorImage.size.height);
-        _videoIndicator.image = videoIndicatorImage;
-        _videoIndicator.autoresizesSubviews = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-        [self addSubview:_videoIndicator];
-        
         // Selection button
         _selectedButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _selectedButton.contentMode = UIViewContentModeTopRight;
         _selectedButton.adjustsImageWhenHighlighted = NO;
-        [_selectedButton setImage:[UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageSelectedSmallOff" ofType:@"png" inBundle:[NSBundle bundleForClass:[self class]]] forState:UIControlStateNormal];
-        [_selectedButton setImage:[UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageSelectedSmallOn" ofType:@"png" inBundle:[NSBundle bundleForClass:[self class]]] forState:UIControlStateSelected];
+        [_selectedButton setImage:[UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageSelectedSmallOff" ofType:@"png" inBundle:[NSBundle bundleForClass:[MWGridCell class]]] forState:UIControlStateNormal];
+        [_selectedButton setImage:[UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageSelectedSmallOn" ofType:@"png" inBundle:[NSBundle bundleForClass:[MWGridCell class]]] forState:UIControlStateSelected];
         [_selectedButton addTarget:self action:@selector(selectionButtonPressed) forControlEvents:UIControlEventTouchDown];
         _selectedButton.hidden = YES;
         _selectedButton.frame = CGRectMake(0, 0, 44, 44);
@@ -124,11 +112,6 @@
 
 - (void)setPhoto:(id <MWPhoto>)photo {
     _photo = photo;
-    if ([photo respondsToSelector:@selector(isVideo)]) {
-        _videoIndicator.hidden = !photo.isVideo;
-    } else {
-        _videoIndicator.hidden = YES;
-    }
     if (_photo) {
         if (![_photo underlyingImage]) {
             [self showLoadingIndicator];
@@ -196,7 +179,7 @@
     if (![_photo respondsToSelector:@selector(emptyImage)] || !_photo.emptyImage) {
         if (!_loadingError) {
             _loadingError = [UIImageView new];
-            _loadingError.image = [UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageError" ofType:@"png" inBundle:[NSBundle bundleForClass:[self class]]];
+            _loadingError.image = [UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageError" ofType:@"png" inBundle:[NSBundle bundleForClass:[MWGridCell class]]];
             _loadingError.userInteractionEnabled = NO;
             [_loadingError sizeToFit];
             [self addSubview:_loadingError];

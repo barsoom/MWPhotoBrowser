@@ -89,14 +89,9 @@
     self.photo = nil;
     self.captionView = nil;
     self.selectedButton = nil;
-    self.playButton = nil;
     _photoImageView.hidden = NO;
     _photoImageView.image = nil;
     _index = NSUIntegerMax;
-}
-
-- (BOOL)displayingVideo {
-    return [_photo respondsToSelector:@selector(isVideo)] && _photo.isVideo;
 }
 
 - (void)setImageHidden:(BOOL)hidden {
@@ -172,7 +167,7 @@
     if (![_photo respondsToSelector:@selector(emptyImage)] || !_photo.emptyImage) {
         if (!_loadingError) {
             _loadingError = [UIImageView new];
-            _loadingError.image = [UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageError" ofType:@"png" inBundle:[NSBundle bundleForClass:[self class]]];
+            _loadingError.image = [UIImage imageForResourcePath:@"MWPhotoBrowser.bundle/ImageError" ofType:@"png" inBundle:[NSBundle bundleForClass:[MWZoomingScrollView class]]];
             _loadingError.userInteractionEnabled = NO;
             _loadingError.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
             UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
@@ -294,12 +289,6 @@
     // Disable scrolling initially until the first pinch to fix issues with swiping on an initally zoomed in photo
     self.scrollEnabled = NO;
     
-    // If it's a video then disable zooming
-    if ([self displayingVideo]) {
-        self.maximumZoomScale = self.zoomScale;
-        self.minimumZoomScale = self.zoomScale;
-    }
-
     // Layout
 	[self setNeedsLayout];
 
@@ -383,11 +372,6 @@
 
 - (void)handleDoubleTap:(CGPoint)touchPoint {
     
-    // Dont double tap to zoom if showing a video
-    if ([self displayingVideo]) {
-        return;
-    }
-	
 	// Cancel any single tap handling
 	[NSObject cancelPreviousPerformRequestsWithTarget:_photoBrowser];
 	
